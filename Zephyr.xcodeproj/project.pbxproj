@@ -35,6 +35,7 @@
 		8CF44C47C2DC2CAB2169759D /* QuotaRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6547E613AA748A4D8CEEEF81 /* QuotaRecorder.swift */; };
 		95F0F7D7DB40B78972032D40 /* CodexQuotaClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F8BF31ECD7CECDE6185EC3 /* CodexQuotaClient.swift */; };
 		9711ABC1F1ACB41FA7C85E59 /* SMCSensors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 727B1C0409719A3D79AFF633 /* SMCSensors.swift */; };
+		9F066813F1CF943EE65C80BA /* app.zephyr.Zephyr.helper.plist in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4E64DA17A27C40ED63815F7 /* app.zephyr.Zephyr.helper.plist */; };
 		A1BB94A6A0DA112B31374148 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E5AE27B925559AA4920C6A6 /* Models.swift */; };
 		B220F6EA82CF472A46CF131A /* HelperClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D48ABFA10FEC6E6B1172FF46 /* HelperClient.swift */; };
 		B4F78867829019CE9896D336 /* SystemServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71A5985749BDDA01BF6F3EE0 /* SystemServices.swift */; };
@@ -71,6 +72,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		14754B7A48C4218EE49E6031 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Contents/Library/LaunchDaemons;
+			dstSubfolderSpec = 1;
+			files = (
+				9F066813F1CF943EE65C80BA /* app.zephyr.Zephyr.helper.plist in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		91FCFFC620EFAFFE94FD854E /* Embed Dependencies */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -129,6 +140,7 @@
 		DEAB52C71DE12D9EBA250804 /* NetworkPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkPage.swift; sourceTree = "<group>"; };
 		DFAA0FA2ECD57246454E939B /* MenuBarViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarViews.swift; sourceTree = "<group>"; };
 		E9DC0144A723F63DD5879EB6 /* HelperProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperProtocol.swift; sourceTree = "<group>"; };
+		F4E64DA17A27C40ED63815F7 /* app.zephyr.Zephyr.helper.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = app.zephyr.Zephyr.helper.plist; sourceTree = "<group>"; };
 		FFDBF4CFC5A8F7EDDF7D9BA1 /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -161,6 +173,7 @@
 		48FE2789E3193A5AE9EBEFFB /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				F4E64DA17A27C40ED63815F7 /* app.zephyr.Zephyr.helper.plist */,
 				71D743BCAE3EDBF05E02CE97 /* main.swift */,
 			);
 			path = Helper;
@@ -280,8 +293,8 @@
 			buildPhases = (
 				77B8BA99491B1A259CD320A2 /* Sources */,
 				9C6C9CF6C8261B132BE93EB9 /* Resources */,
+				14754B7A48C4218EE49E6031 /* CopyFiles */,
 				91FCFFC620EFAFFE94FD854E /* Embed Dependencies */,
-				3B1809F1CF1F54B260D9AEB3 /* Embed helper launchd plist */,
 			);
 			buildRules = (
 			);
@@ -385,28 +398,6 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		3B1809F1CF1F54B260D9AEB3 /* Embed helper launchd plist */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Embed helper launchd plist";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "set -e\ndest=\"${TARGET_BUILD_DIR}/${CONTENTS_FOLDER_PATH}/Library/LaunchDaemons\"\nmkdir -p \"$dest\"\ncp \"${SRCROOT}/Helper/app.zephyr.Zephyr.helper.plist\" \"$dest/\"\n# Adding the plist invalidates the seal made earlier in the build; reseal the bundle.\nid=\"${EXPANDED_CODE_SIGN_IDENTITY:--}\"\nfor lib in \"${TARGET_BUILD_DIR}/${CONTENTS_FOLDER_PATH}\"/MacOS/*.dylib; do\n  [ -e \"$lib\" ] && codesign --force --timestamp --sign \"$id\" \"$lib\"\ndone\ncodesign --force --timestamp --sign \"$id\" --options runtime \\\n  --preserve-metadata=identifier,entitlements,flags \"${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME}\"\n";
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		77B8BA99491B1A259CD320A2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -492,7 +483,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = App/Zephyr.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = App/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -502,7 +492,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = app.zephyr.Zephyr;
 				PRODUCT_NAME = Zephyr;
 				SDKROOT = macosx;
-				STRIP_INSTALLED_PRODUCT = NO;
 			};
 			name = Debug;
 		};
@@ -602,7 +591,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = App/Zephyr.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = App/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -612,7 +600,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = app.zephyr.Zephyr;
 				PRODUCT_NAME = Zephyr;
 				SDKROOT = macosx;
-				STRIP_INSTALLED_PRODUCT = NO;
 			};
 			name = Release;
 		};

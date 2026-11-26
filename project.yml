@@ -25,6 +25,12 @@ targets:
     sources:
       - App
       - Shared
+      # The helper's launchd plist is copied by a normal build phase, so Xcode signs the bundle once, after stripping.
+      - path: Helper/app.zephyr.Zephyr.helper.plist
+        buildPhase:
+          copyFiles:
+            destination: wrapper
+            subpath: Contents/Library/LaunchDaemons
     info:
       path: App/Info.plist
       properties:
@@ -45,8 +51,6 @@ targets:
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: App/Info.plist
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-        STRIP_INSTALLED_PRODUCT: NO          # avoids Xcode's 'strip will invalidate the code signature' warnings
-        ENABLE_USER_SCRIPT_SANDBOXING: NO   # the helper-plist script writes into the app bundle
     dependencies:
       - target: ZephyrHelper
         embed: true
@@ -58,21 +62,6 @@ targets:
         link: false
         copy:
           destination: executables
-    postBuildScripts:
-      - name: Embed helper launchd plist
-        basedOnDependencyAnalysis: false
-        script: |
-          set -e
-          dest="${TARGET_BUILD_DIR}/${CONTENTS_FOLDER_PATH}/Library/LaunchDaemons"
-          mkdir -p "$dest"
-          cp "${SRCROOT}/Helper/app.zephyr.Zephyr.helper.plist" "$dest/"
-          # Adding the plist invalidates the seal made earlier in the build; reseal the bundle.
-          id="${EXPANDED_CODE_SIGN_IDENTITY:--}"
-          for lib in "${TARGET_BUILD_DIR}/${CONTENTS_FOLDER_PATH}"/MacOS/*.dylib; do
-            [ -e "$lib" ] && codesign --force --timestamp --sign "$id" "$lib"
-          done
-          codesign --force --timestamp --sign "$id" --options runtime \
-            --preserve-metadata=identifier,entitlements,flags "${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME}"
   ZephyrHelper:
     type: tool
     platform: macOS
