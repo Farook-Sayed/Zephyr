@@ -15,7 +15,7 @@ enum SelfTest {
             }
             print("== Zephyr self-test ==")
             print("mainApp login item status: \(SMAppService.mainApp.status.rawValue) (0 notRegistered,1 enabled,2 requiresApproval,3 notFound)")
-            print("Helper registration status: \(store.controller.helperState)")
+            print("Helper XPC ping: " + ((await store.controller.pingHelper()).map { "OK, helper v\($0)" } ?? "NO ANSWER (not installed, or it rejected this copy of the app)"))
             print("Fans (\(s.fans.count)):")
             for fan in s.fans {
                 print("  \(fan.name): \(f(fan.rpm, " rpm", 0)) (min \(f(fan.minRPM, "", 0)) / max \(f(fan.maxRPM, "", 0)), target \(f(fan.targetRPM, "", 0)), \(f(fan.percentOfMax, "%", 0)) of max, forced=\(fan.isForced))")

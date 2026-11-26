@@ -5,7 +5,7 @@ public enum HelperConstants {
     public static let appBundleID = "app.zephyr.Zephyr"
     public static let machService = "app.zephyr.Zephyr.helper"
     public static let daemonPlist = "app.zephyr.Zephyr.helper.plist"
-    public static let helperVersion = "1.0"
+    public static let helperVersion = "1.1"
     /// If the app stops talking to the helper for this long while fans are overridden, the helper
     /// hands fan control back to macOS on its own.
     public static let clientTimeout: TimeInterval = 20

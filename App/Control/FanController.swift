@@ -17,6 +17,7 @@ final class FanController {
     // MARK: State
     private(set) var failsafeActive = false
     private(set) var helperState: HelperState = .notInstalled
+    private(set) var helperNotice: String?
     private(set) var lastError: String?
     private(set) var lastTargets: [Double] = []
 
@@ -44,7 +45,6 @@ final class FanController {
         } else {
             curveNodes = FanPolicy.defaultCurve
         }
-        helperState = helper.registrationState
         // Launch argument for UI testing: `--mode manual`.
         if let i = CommandLine.arguments.firstIndex(of: "--mode"), i + 1 < CommandLine.arguments.count,
            let m = FanMode(rawValue: CommandLine.arguments[i + 1]) { mode = m }
@@ -93,16 +93,28 @@ final class FanController {
 
     // MARK: Helper lifecycle
 
+    /// Never trust the registration record alone: macOS can say "enabled" while the helper rejects this copy of
+    /// the app (wrong location for an ad-hoc install, outdated helper). A real XPC round trip is the truth.
     func refreshHelperState() {
         let registered = helper.registrationState
-        if registered.isReady { helperState = registered; return }
-        // Not registered through SMAppService (ad-hoc builds can't be): a helper installed by
-        // scripts/install-helper.sh still answers on its Mach service.
-        helperState = registered
         Task {
-            if await helper.ping() != nil { helperState = .ready }
+            if let version = await helper.ping() {
+                helperState = .ready
+                helperNotice = version == HelperConstants.helperVersion ? nil
+                    : "The installed fan helper (v\(version)) is out of date. Run scripts/install-helper.sh again to update it."
+            } else {
+                helperNotice = nil
+                switch registered {
+                case .requiresApproval: helperState = .requiresApproval
+                case .ready: helperState = .unreachable("The fan helper is installed but refused or didn't answer this copy of Zephyr. Reinstall it for this app with scripts/install-helper.sh.")
+                default: helperState = .notFound
+                }
+            }
         }
     }
+
+    /// For `--selftest`: the helper's version string, or nil if it can't be reached.
+    func pingHelper() async -> String? { await helper.ping() }
 
     func installHelper() {
         do {
@@ -112,7 +124,7 @@ final class FanController {
             lastError = error.localizedDescription
         }
         refreshHelperState()
-        if helperState == .requiresApproval { helper.openApprovalSettings() }
+        if helper.registrationState == .requiresApproval { helper.openApprovalSettings() }
     }
 
     func uninstallHelper() {

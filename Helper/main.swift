@@ -105,6 +105,9 @@ final class HelperService: NSObject, NSXPCListenerDelegate, ZephyrHelperProtocol
     private var timer: DispatchSourceTimer?
     private let appExecutablePath: String
     private let requirement: String
+    /// Without a Team ID (ad-hoc build) the signing requirement alone is weak, so the app's path is pinned too.
+    /// A team-signed helper relies on the kernel-checked code-signing requirement, so the app can live anywhere.
+    private let pinsAppPath: Bool
     private var connectionCount = 0
 
     override init() {
@@ -117,6 +120,7 @@ final class HelperService: NSObject, NSXPCListenerDelegate, ZephyrHelperProtocol
             appExecutablePath = me.deletingLastPathComponent().appendingPathComponent("Zephyr").path
         }
         requirement = HelperService.makeRequirement()
+        pinsAppPath = !requirement.contains("certificate leaf")
         super.init()
         let t = DispatchSource.makeTimerSource(queue: queue)
         t.schedule(deadline: .now() + 1, repeating: 1.0)
@@ -153,7 +157,7 @@ final class HelperService: NSObject, NSXPCListenerDelegate, ZephyrHelperProtocol
         let n = proc_pidpath(connection.processIdentifier, &buffer, UInt32(buffer.count))
         let callerPath = n > 0 ? String(cString: buffer) : ""
         let resolved = URL(fileURLWithPath: callerPath).resolvingSymlinksInPath().path
-        guard resolved == appExecutablePath else {
+        guard !pinsAppPath || resolved == appExecutablePath else {
             print("rejected connection from \(callerPath)")
             return false
         }

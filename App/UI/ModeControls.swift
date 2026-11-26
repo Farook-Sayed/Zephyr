@@ -39,7 +39,9 @@ struct HelperBanner: View {
         let c = store.controller
         switch c.helperState {
         case .ready:
-            EmptyView()
+            if let notice = c.helperNotice {
+                Label(notice, systemImage: "exclamationmark.triangle").font(.caption).foregroundStyle(.orange)
+            }
         default:
             VStack(alignment: .leading, spacing: 8) {
                 Label(title(c.helperState), systemImage: "lock.shield").font(.callout.weight(.semibold))
@@ -63,7 +65,7 @@ struct HelperBanner: View {
     private func title(_ s: HelperState) -> String {
         switch s {
         case .requiresApproval: "Approval needed"
-        case .notFound: "Helper not registered"
+        case .notFound: "Fan helper not available"
         case .unreachable: "Helper not responding"
         default: "Fan control is off"
         }
@@ -72,7 +74,7 @@ struct HelperBanner: View {
     private func detail(_ s: HelperState) -> String {
         switch s {
         case .requiresApproval: "Allow “Zephyr” under System Settings → General → Login Items & Extensions."
-        case .notFound: "macOS won't register helpers for ad-hoc signed builds. Sign with a developer certificate, or run scripts/install-helper.sh once in Terminal."
+        case .notFound: "The fan helper isn't installed or can't be reached. Run scripts/install-helper.sh with the path to this Zephyr.app once in Terminal (asks for your admin password)."
         case .unreachable(let m): m
         default: "Reading sensors works as-is. Changing fan speed needs a small background helper — you approve it once."
         }
