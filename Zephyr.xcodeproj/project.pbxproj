@@ -502,6 +502,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = app.zephyr.Zephyr;
 				PRODUCT_NAME = Zephyr;
 				SDKROOT = macosx;
+				STRIP_INSTALLED_PRODUCT = NO;
 			};
 			name = Debug;
 		};
@@ -611,6 +612,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = app.zephyr.Zephyr;
 				PRODUCT_NAME = Zephyr;
 				SDKROOT = macosx;
+				STRIP_INSTALLED_PRODUCT = NO;
 			};
 			name = Release;
 		};

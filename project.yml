@@ -45,6 +45,7 @@ targets:
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: App/Info.plist
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        STRIP_INSTALLED_PRODUCT: NO          # avoids Xcode's 'strip will invalidate the code signature' warnings
         ENABLE_USER_SCRIPT_SANDBOXING: NO   # the helper-plist script writes into the app bundle
     dependencies:
       - target: ZephyrHelper
