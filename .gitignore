@@ -1,0 +1,11 @@
+.DS_Store
+build/
+dist/
+DerivedData/
+code-review/
+xcuserdata/
+*.xcarchive
+*.dmg
+*.zip
+icon/make_icon
+Config/Local.xcconfig

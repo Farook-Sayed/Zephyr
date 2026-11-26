@@ -1,0 +1,104 @@
+name: Zephyr
+options:
+  bundleIdPrefix: app.zephyr
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+configFiles:
+  Debug: Config/Base.xcconfig
+  Release: Config/Base.xcconfig
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    ARCHS: "arm64 x86_64"
+    ONLY_ACTIVE_ARCH: NO
+    ENABLE_HARDENED_RUNTIME: YES
+    OTHER_CODE_SIGN_FLAGS: "--timestamp"
+    SWIFT_TREAT_WARNINGS_AS_ERRORS: NO
+    GCC_TREAT_WARNINGS_AS_ERRORS: NO
+targets:
+  Zephyr:
+    type: application
+    platform: macOS
+    sources:
+      - App
+      - Shared
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleName: Zephyr
+        CFBundleDisplayName: Zephyr
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        LSApplicationCategoryType: public.app-category.utilities
+        LSUIElement: true
+        NSHumanReadableCopyright: "Zephyr — native fan control and hardware telemetry."
+    entitlements:
+      path: App/Zephyr.entitlements
+      properties: {}
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.zephyr.Zephyr
+        PRODUCT_NAME: Zephyr
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: App/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ENABLE_USER_SCRIPT_SANDBOXING: NO   # the helper-plist script writes into the app bundle
+    dependencies:
+      - target: ZephyrHelper
+        embed: true
+        link: false
+        copy:
+          destination: executables
+      - target: ZephyrUsage
+        embed: true
+        link: false
+        copy:
+          destination: executables
+    postBuildScripts:
+      - name: Embed helper launchd plist
+        basedOnDependencyAnalysis: false
+        script: |
+          set -e
+          dest="${TARGET_BUILD_DIR}/${CONTENTS_FOLDER_PATH}/Library/LaunchDaemons"
+          mkdir -p "$dest"
+          cp "${SRCROOT}/Helper/app.zephyr.Zephyr.helper.plist" "$dest/"
+          # Adding the plist invalidates the seal made earlier in the build; reseal the bundle.
+          id="${EXPANDED_CODE_SIGN_IDENTITY:--}"
+          for lib in "${TARGET_BUILD_DIR}/${CONTENTS_FOLDER_PATH}"/MacOS/*.dylib; do
+            [ -e "$lib" ] && codesign --force --timestamp --sign "$id" "$lib"
+          done
+          codesign --force --timestamp --sign "$id" --options runtime \
+            --preserve-metadata=identifier,entitlements,flags "${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME}"
+  ZephyrHelper:
+    type: tool
+    platform: macOS
+    sources:
+      - Helper/main.swift
+      - Shared
+    settings:
+      base:
+        PRODUCT_NAME: ZephyrHelper
+        PRODUCT_BUNDLE_IDENTIFIER: app.zephyr.Zephyr.helper
+        SKIP_INSTALL: YES
+        CREATE_INFOPLIST_SECTION_IN_BINARY: YES
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleName: ZephyrHelper
+        OTHER_CODE_SIGN_FLAGS: "-i app.zephyr.Zephyr.helper --timestamp"
+  ZephyrUsage:
+    type: tool
+    platform: macOS
+    sources:
+      - UsageRecorder/main.swift
+      - Shared/QuotaRecorder.swift
+    settings:
+      base:
+        PRODUCT_NAME: ZephyrUsage
+        PRODUCT_BUNDLE_IDENTIFIER: app.zephyr.Zephyr.usage
+        SKIP_INSTALL: YES
+        CREATE_INFOPLIST_SECTION_IN_BINARY: YES
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleName: ZephyrUsage
+        OTHER_CODE_SIGN_FLAGS: "-i app.zephyr.Zephyr.usage --timestamp"

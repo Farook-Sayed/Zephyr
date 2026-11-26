@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>app.zephyr.Zephyr.helper</string>
+	<key>BundleProgram</key>
+	<string>Contents/MacOS/ZephyrHelper</string>
+	<key>MachServices</key>
+	<dict>
+		<key>app.zephyr.Zephyr.helper</key>
+		<true/>
+	</dict>
+	<key>AssociatedBundleIdentifiers</key>
+	<array>
+		<string>app.zephyr.Zephyr</string>
+	</array>
+	<key>RunAtLoad</key>
+	<false/>
+	<key>ProcessType</key>
+	<string>Interactive</string>
+</dict>
+</plist>
