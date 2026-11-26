@@ -9,6 +9,20 @@ Swift and SwiftUI, no third-party libraries.</p>
 
 ![Overview](docs/screenshots/overview.png)
 
+## Download
+
+**[Download Zephyr 1.0](https://github.com/Farook-Sayed/Zephyr/releases/latest/download/Zephyr-1.0.zip)** (macOS 14 or later, Apple Silicon and Intel). It is signed with a Developer ID and notarized by Apple.
+
+Unzip it, move **Zephyr.app** to Applications and open it; it lives in the menu bar. Monitoring works straight away.
+
+To turn on fan control, download [`install-helper.sh`](https://github.com/Farook-Sayed/Zephyr/releases/latest/download/install-helper.sh) and run it once (it asks for your administrator password):
+
+```bash
+bash ~/Downloads/install-helper.sh /Applications/Zephyr.app
+```
+
+[`uninstall-helper.sh`](https://github.com/Farook-Sayed/Zephyr/releases/latest/download/uninstall-helper.sh) removes it again. See the [release notes](https://github.com/Farook-Sayed/Zephyr/releases/latest).
+
 ## Features
 
 **Fan control**
@@ -44,7 +58,7 @@ Swift and SwiftUI, no third-party libraries.</p>
 
 | | |
 |---|---|
-| **Verified by the author** | MacBook Pro with M5 Pro (`Mac17,9`), macOS 27: sensor readings and all fan modes |
+| **Verified by the author** | MacBook Pro with M5 Pro (`Mac17,9`), macOS 27: sensor readings and fan control. The [release notes](https://github.com/Farook-Sayed/Zephyr/releases/latest) say what was checked for each version |
 | **Builds, but untested** | Intel Macs, other Apple Silicon models, macOS 14 to 26 |
 
 Sensor and fan keys differ between Mac models. Treat fan control on anything other than the verified model as experimental, and please open an issue with your model identifier.
@@ -52,12 +66,10 @@ Sensor and fan keys differ between Mac models. Treat fan control on anything oth
 ## Requirements
 
 - macOS 14 or later, Apple Silicon or Intel
-- Xcode 26 or later to build
+- Xcode 26 or later, only if you build it yourself
 - An administrator password, once, to install the fan control helper
 
-There is no prebuilt download yet, so you build it yourself.
-
-## Build and install
+## Build from source
 
 ```bash
 git clone https://github.com/Farook-Sayed/Zephyr.git
